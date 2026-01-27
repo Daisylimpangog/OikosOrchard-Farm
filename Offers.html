@@ -851,8 +851,12 @@
                 specialRequests: specialRequests
             };
 
-            // Send to server
-            fetch('send-booking.php', {
+            // Send to server (using Netlify function)
+            const apiEndpoint = window.location.hostname === 'localhost' 
+                ? 'http://localhost:8888/.netlify/functions/send-booking'  // For local testing
+                : '/.netlify/functions/send-booking';  // For deployed Netlify site
+                
+            fetch(apiEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
