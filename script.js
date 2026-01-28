@@ -1,4 +1,50 @@
 // ================================
+// REVIEWS PERSISTENCE (LocalStorage)
+// ================================
+
+const REVIEWS_STORAGE_KEY = 'oikos_reviews';
+
+function saveReviewToStorage(reviewData) {
+    let reviews = JSON.parse(localStorage.getItem(REVIEWS_STORAGE_KEY)) || [];
+    reviews.unshift({
+        ...reviewData,
+        id: Date.now(), // Unique ID for the review
+        timestamp: new Date().toISOString()
+    });
+    localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(reviews));
+}
+
+function loadReviewsFromStorage() {
+    const reviews = JSON.parse(localStorage.getItem(REVIEWS_STORAGE_KEY)) || [];
+    const container = document.getElementById('testimonials-container');
+    
+    if (!container || reviews.length === 0) return;
+    
+    reviews.forEach(review => {
+        // Check if review already exists in DOM
+        const existingReview = container.querySelector(`[data-review-id="${review.id}"]`);
+        if (!existingReview) {
+            const newTestimonial = document.createElement('div');
+            newTestimonial.className = 'col-md-4 testimonial-item';
+            newTestimonial.setAttribute('data-review-id', review.id);
+            newTestimonial.innerHTML = `
+                <div class="testimonial-card">
+                    <div class="stars mb-2">
+                        ${Array(parseInt(review.rating)).fill('<i class="fas fa-star text-warning"></i>').join('')}
+                        ${Array(5 - parseInt(review.rating)).fill('<i class="fas fa-star text-secondary"></i>').join('')}
+                    </div>
+                    <p class="rating-number">${review.rating}.0</p>
+                    <p class="mb-3">"${review.review}"</p>
+                    <h6 class="text-success">- ${review.name}</h6>
+                    <small class="text-muted">${review.location}</small>
+                </div>
+            `;
+            container.insertBefore(newTestimonial, container.firstChild);
+        }
+    });
+}
+
+// ================================
 // PAGINATION FUNCTIONALITY
 // ================================
 
@@ -197,9 +243,22 @@ function submitReview() {
         return;
     }
 
-    // Create new testimonial card
+    // Prepare review data
+    const reviewData = {
+        name,
+        location,
+        review,
+        rating
+    };
+
+    // Save to localStorage
+    saveReviewToStorage(reviewData);
+
+    // Create new testimonial card with review ID
+    const reviewId = Date.now();
     const newTestimonial = document.createElement('div');
-    newTestimonial.className = 'col-md-4';
+    newTestimonial.className = 'col-md-4 testimonial-item';
+    newTestimonial.setAttribute('data-review-id', reviewId);
     newTestimonial.innerHTML = `
         <div class="testimonial-card">
             <div class="stars mb-2">
@@ -235,6 +294,12 @@ function submitReview() {
     // Close modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
     modal.hide();
+
+    // Reinitialize pagination to include new review
+    setTimeout(() => {
+        initPagination();
+        displayPage(1);
+    }, 500);
 
     // Log data (for backend integration)
     console.log('New Review Data:', {
@@ -812,6 +877,14 @@ window.showProductList = function(category) {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Agro Farm Website - JavaScript loaded successfully');
     console.log('showProductList function available:', typeof window.showProductList);
+    
+    // Load saved reviews from localStorage
+    loadReviewsFromStorage();
+    
+    // Initialize pagination after reviews are loaded
+    setTimeout(() => {
+        initPagination();
+    }, 100);
     
     // Initialize booking form handlers
     initializeBookingForms();
