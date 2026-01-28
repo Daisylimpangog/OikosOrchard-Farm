@@ -819,18 +819,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeBookingForms() {
     // Handle "Book Now" buttons
-    const bookNowButtons = document.querySelectorAll('button:has-text("Book Now")');
-    if (bookNowButtons.length === 0) {
-        // Try alternative selector for buttons with text containing "Book"
-        document.querySelectorAll('button').forEach(btn => {
-            if (btn.textContent.includes('Book Now')) {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showBookingForm(this);
-                });
-            }
-        });
-    }
+    document.querySelectorAll('button').forEach(btn => {
+        if (btn.textContent.includes('Book Now')) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showBookingForm(this);
+            });
+        }
+    });
 }
 
 function showBookingForm(buttonElement) {
