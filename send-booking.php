@@ -1,4 +1,9 @@
 <?php
+// Error handling for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
 header('Content-Type: application/json; charset=utf-8');
 
 // Include Google Sheets integration and email helper

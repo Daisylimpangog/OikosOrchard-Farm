@@ -4,9 +4,6 @@ require_once __DIR__ . '/PHPMailer/PHPMailer.php';
 require_once __DIR__ . '/PHPMailer/Exception.php';
 require_once __DIR__ . '/gmail-config.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
 /**
  * Send email via Gmail SMTP
  * @param string $recipientEmail - Email address to send to
@@ -17,7 +14,7 @@ use PHPMailer\PHPMailer\Exception;
  */
 function sendEmailViaGmail($recipientEmail, $subject, $htmlBody, $senderName = MAIL_FROM_NAME) {
     try {
-        $mail = new PHPMailer(true);
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
         
         // SMTP Configuration
         $mail->isSMTP();
