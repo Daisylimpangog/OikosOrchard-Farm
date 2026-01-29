@@ -73,11 +73,20 @@ try {
     // Send to Google Sheets (non-blocking - don't fail if it has issues)
     try {
         $sheetId = '1pWE72focDg7ZguylUJIaSysHZg1qxfQ_JiiT4Fk-26c';
-        $googleSheetUrl = 'https://script.google.com/macros/s/AKfycbyfgMWh3i6EvBrf6yyNkrHsX7LFUYXTvzZ3C95oEI7DVcDOmWLXOUdj1j4PMbag_-fI7w/exec';
+        $googleSheetUrl = 'https://script.google.com/macros/s/AKfycby_SVLSpAVC7S9JCbtpoVowpoJX4TWBdeOtvEj1elO3TuxReanmEAAavGaO8ShjlEcu1Q/exec';
         
         $payload = json_encode([
             'sheetId' => $sheetId,
-            'bookingData' => $bookingData
+            'bookingId' => $bookingData['id'],
+            'fullName' => $bookingData['fullName'],
+            'email' => $bookingData['email'],
+            'phone' => $bookingData['phone'],
+            'checkinDate' => $bookingData['checkinDate'],
+            'guests' => $bookingData['guests'],
+            'packageName' => $bookingData['packageName'],
+            'packagePrice' => $bookingData['packagePrice'],
+            'specialRequests' => $bookingData['specialRequests'],
+            'timestamp' => $bookingData['timestamp']
         ]);
         
         $ch = curl_init();

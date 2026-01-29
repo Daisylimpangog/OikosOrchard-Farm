@@ -357,5 +357,17 @@
         "specialRequests": "sa",
         "timestamp": "2026-01-29 08:17:56",
         "id": "booking_697b09a49c91e"
+    },
+    {
+        "fullName": "Daisy Limpangog",
+        "email": "info@chpcebu.com",
+        "phone": "09151520123",
+        "checkinDate": "2026-05-23",
+        "guests": "4",
+        "packageName": "Family Package (12 Pax)",
+        "packagePrice": "\u20b110,000",
+        "specialRequests": "da",
+        "timestamp": "2026-01-29 08:25:46",
+        "id": "booking_697b0b7a4830a"
     }
 ]
