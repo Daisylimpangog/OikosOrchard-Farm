@@ -68,7 +68,7 @@ try {
     http_response_code(200);
     $response = json_encode([
         'success' => true,
-        'message' => 'Thank you! We have received your request. You will receive an SMS confirmation shortly, and our team will contact you within 24 hours.'
+        'message' => 'Thank you! We have received your request. You will receive an SMS notification on +639948962820 shortly, and our team will contact you within 24 hours.'
     ]);
 
 } catch (Exception $e) {
