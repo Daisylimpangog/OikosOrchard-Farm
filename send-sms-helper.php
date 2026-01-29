@@ -3,7 +3,7 @@
 require_once __DIR__ . '/twilio-config.php';
 
 /**
- * Send SMS via Twilio
+ * Send SMS via Twilio Messaging Service
  * @param string $message - SMS message text
  * @param string $recipientNumber - Phone number to send to (default: NOTIFY_PHONE_NUMBER)
  * @return array - ['success' => bool, 'message' => string, 'sid' => string]
@@ -13,9 +13,9 @@ function sendSMSViaTwilio($message, $recipientNumber = NOTIFY_PHONE_NUMBER) {
         // Prepare the request
         $url = 'https://api.twilio.com/2010-04-01/Accounts/' . TWILIO_ACCOUNT_SID . '/Messages.json';
         
-        // Prepare data
+        // Prepare data using Messaging Service SID (bypasses phone number restrictions)
         $postData = http_build_query([
-            'From' => TWILIO_PHONE_NUMBER,
+            'MessagingServiceSid' => TWILIO_MESSAGING_SERVICE_SID,
             'To' => $recipientNumber,
             'Body' => $message
         ]);

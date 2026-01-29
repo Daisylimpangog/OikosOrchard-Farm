@@ -55,10 +55,16 @@ try {
     // Admin email address
     $adminEmail = 'oikosorchardandfarm2@gmail.com';
 
-    // Send SMS notification to admin and customer
+    // Send SMS notification to admin using Messaging Service
     $phoneWithCountryCode = '+63' . ltrim($phone, '0'); // Convert 09xxxxxxxxx to +639xxxxxxxxx
-    sendGetStartedSMS($name, $email, $phone, $interested);
-    sendCustomerConfirmationSMS($name, $phoneWithCountryCode, 'inquiry');
+    
+    // Send SMS to admin
+    $adminSmsResult = sendGetStartedSMS($name, $email, $phone, $interested);
+    error_log("Admin SMS Result: " . json_encode($adminSmsResult));
+    
+    // Send SMS to customer
+    $customerSmsResult = sendCustomerConfirmationSMS($name, $phoneWithCountryCode, 'inquiry');
+    error_log("Customer SMS Result: " . json_encode($customerSmsResult));
 
     // Log the request for records
     $logEntry = date('Y-m-d H:i:s') . " | Name: {$name} | Email: {$email} | Phone: {$phone} | Interested: {$interested}\n";
@@ -68,7 +74,7 @@ try {
     http_response_code(200);
     $response = json_encode([
         'success' => true,
-        'message' => 'Thank you! We have received your request. You will receive an SMS notification on +639948962820 shortly, and our team will contact you within 24 hours.'
+        'message' => 'Thank you! We have received your request. You will receive an SMS notification shortly, and our team will contact you within 24 hours.'
     ]);
 
 } catch (Exception $e) {
