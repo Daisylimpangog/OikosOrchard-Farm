@@ -1,9 +1,9 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-// Include Google Sheets integration and email helper
+// Include Google Sheets integration and SMS helper
 require_once __DIR__ . '/google-sheets-integration.php';
-require_once __DIR__ . '/send-email-helper.php';
+require_once __DIR__ . '/send-sms-helper.php';
 
 try {
     // Check if request is POST
@@ -74,13 +74,15 @@ try {
     // Send to Google Sheets
     sendToGoogleSheets($bookingData);
     
-    // Send emails via Gmail SMTP using PHPMailer
-    sendBookingEmailsViaGmail($email, $fullName, $packageName, $packagePrice, $checkinDate, $guests, $specialRequests, $phone, $timestamp);
+    // Send SMS notification to admin
+    $phoneWithCountryCode = '+63' . ltrim($phone, '0'); // Convert 09xxxxxxxxx to +639xxxxxxxxx
+    sendBookingSMS($fullName, $email, $phone, $packageName, $checkinDate, $guests);
+    sendCustomerConfirmationSMS($fullName, $phoneWithCountryCode, 'booking');
     
     // Success response
     echo json_encode([
         'success' => true,
-        'message' => 'Booking submitted successfully! A confirmation email has been sent to ' . $email . '. Our team will contact you within 24 hours at ' . $phone . '.',
+        'message' => 'Booking submitted successfully! You will receive an SMS confirmation shortly. Our team will contact you within 24 hours.',
         'data' => $bookingData
     ]);
     exit;

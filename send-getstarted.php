@@ -8,8 +8,8 @@ ini_set('display_errors', 0);
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Include email helper with PHPMailer
-require_once __DIR__ . '/send-email-helper.php';
+// Include SMS helper with Twilio
+require_once __DIR__ . '/send-sms-helper.php';
 
 try {
     // Check if request is POST
@@ -55,8 +55,10 @@ try {
     // Admin email address
     $adminEmail = 'oikosorchardandfarm2@gmail.com';
 
-    // Send emails via Gmail SMTP using PHPMailer
-    sendGetStartedEmailsViaGmail($email, $name, $phone, $interested);
+    // Send SMS notification to admin and customer
+    $phoneWithCountryCode = '+63' . ltrim($phone, '0'); // Convert 09xxxxxxxxx to +639xxxxxxxxx
+    sendGetStartedSMS($name, $email, $phone, $interested);
+    sendCustomerConfirmationSMS($name, $phoneWithCountryCode, 'inquiry');
 
     // Log the request for records
     $logEntry = date('Y-m-d H:i:s') . " | Name: {$name} | Email: {$email} | Phone: {$phone} | Interested: {$interested}\n";
@@ -66,7 +68,7 @@ try {
     http_response_code(200);
     $response = json_encode([
         'success' => true,
-        'message' => 'Thank you! We have received your request and will contact you shortly. Check your email for confirmation.'
+        'message' => 'Thank you! We have received your request. You will receive an SMS confirmation shortly, and our team will contact you within 24 hours.'
     ]);
 
 } catch (Exception $e) {
