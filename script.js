@@ -1047,7 +1047,7 @@ function submitBooking(event) {
     }
 
     // Send to server
-    fetch('./send-booking.php', {
+    fetch('/.netlify/functions/send-booking', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
