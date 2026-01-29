@@ -3,7 +3,7 @@
 // DO NOT SHARE THIS FILE - It contains sensitive credentials
 
 define('GMAIL_ADDRESS', 'oikosorchardandfarm2@gmail.com');
-define('GMAIL_APP_PASSWORD', 'khovdtqwbtjsoovp'); // App password without spaces
+define('GMAIL_APP_PASSWORD', 'bthvytqrpislsmuy'); // App password without spaces
 define('MAIL_FROM_NAME', 'Oikos Orchard & Farm');
 
 // SMTP Configuration
