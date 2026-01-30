@@ -1,0 +1,140 @@
+# Oikos Orchard & Farm Security Configuration
+
+# ====================
+# DISABLE DIRECTORY LISTING
+# ====================
+Options -Indexes
+
+# ====================
+# HIDE SERVER INFORMATION
+# ====================
+Header always unset "X-Powered-By"
+Header always unset "Server"
+Header always edit Set-Cookie ^(.*)$ "$1;HttpOnly;Secure;SameSite=Strict"
+
+# ====================
+# SECURITY HEADERS
+# ====================
+Header set X-Content-Type-Options "nosniff"
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-XSS-Protection "1; mode=block"
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+# ====================
+# CONTENT SECURITY POLICY
+# ====================
+Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://embed.tawk.to; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' https:; frame-src 'self' https://embed.tawk.to"
+
+# ====================
+# PROTECT SENSITIVE FILES AND DIRECTORIES
+# ====================
+
+# Block direct access to config files
+<FilesMatch "\.(php|json|env)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Protect config directory
+<DirectoryMatch "^/config/">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</DirectoryMatch>
+
+# Allow access to API but not directory listing
+<Directory "/api/">
+    Options -Indexes
+    AllowOverride All
+</Directory>
+
+# Block access to log files
+<FilesMatch "\.(log|txt)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# ====================
+# PREVENT COMMON ATTACKS
+# ====================
+
+# Block SQL injection attempts
+RewriteCond %{QUERY_STRING} (\=|%3D).*('|%27).*(union|select|insert|update|delete) [NC,OR]
+RewriteCond %{QUERY_STRING} (union|select|insert|update|delete).*(\=|%3D) [NC]
+RewriteRule ^(.*)$ - [F,L]
+
+# Block common exploit patterns
+RewriteCond %{REQUEST_URI} (\.\.\/|\.\.\\) [NC,OR]
+RewriteCond %{REQUEST_URI} (etc|passwd|boot\.ini) [NC,OR]
+RewriteCond %{REQUEST_URI} (cmd|exe|com|bat|pif) [NC]
+RewriteRule ^(.*)$ - [F,L]
+
+# ====================
+# COMPRESSION & PERFORMANCE
+# ====================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# ====================
+# CACHING
+# ====================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/html "access plus 1 day"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType application/json "access plus 0 seconds"
+</IfModule>
+
+# ====================
+# PREVENT HOTLINKING
+# ====================
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_REFERER} !^$
+    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?oikosorchardandfarm\.com [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?localhost [NC]
+    RewriteRule \.(gif|jpg|jpeg|png|mp4)$ - [F,L]
+</IfModule>
+
+# ====================
+# DENY ACCESS TO SENSITIVE FILES
+# ====================
+<FilesMatch "^(README|composer|package|config|\.git|\.env)" >
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# ====================
+# ENABLE HTACCESS OVERRIDES
+# ====================
+<Directory "/api/">
+    AllowOverride All
+</Directory>
+
+<Directory "/config/">
+    AllowOverride All
+</Directory>

@@ -4,6 +4,9 @@
  * Sends contact form messages via SMS to admin
  */
 
+// Load security configuration
+require_once __DIR__ . '/../config/security.php';
+
 header('Content-Type: application/json; charset=utf-8');
 
 try {
