@@ -6,20 +6,12 @@
 Options -Indexes
 
 # ====================
-# HIDE SERVER INFORMATION
-# ====================
-Header always unset "X-Powered-By"
-Header always unset "Server"
-Header always edit Set-Cookie ^(.*)$ "$1;HttpOnly;Secure;SameSite=Strict"
-
-# ====================
 # SECURITY HEADERS
 # ====================
 Header set X-Content-Type-Options "nosniff"
 Header set X-Frame-Options "SAMEORIGIN"
 Header set X-XSS-Protection "1; mode=block"
 Header set Referrer-Policy "strict-origin-when-cross-origin"
-Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
 
 # ====================
 # CONTENT SECURITY POLICY
@@ -27,57 +19,40 @@ Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
 Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://embed.tawk.to; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' https:; frame-src 'self' https://embed.tawk.to"
 
 # ====================
-# PROTECT SENSITIVE FILES AND DIRECTORIES
-# ====================
-
-# Block direct access to config files
-<FilesMatch "\.(php|json|env)$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# Block access to log files
-<FilesMatch "\.(log|txt)$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# Deny access to sensitive file patterns
-<FilesMatch "^(README|composer|package|config|\.git|\.env|\.htaccess)" >
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# ====================
-# API PROTECTION
+# PROTECT CONFIG DIRECTORY
 # ====================
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    
-    # Allow only POST to API files
-    RewriteCond %{REQUEST_METHOD} !^POST$ [NC]
-    RewriteCond %{REQUEST_FILENAME} -f
-    RewriteCond %{REQUEST_FILENAME} /api/.*\.php$ [NC]
-    RewriteRule ^api/.*\.php$ - [F,L]
+    # Block direct access to config directory files
+    RewriteRule ^config/ - [F,L]
+    # Block access to sensitive files in root
+    RewriteRule ^(\.env|\.git) - [F,L]
 </IfModule>
+
+# ====================
+# BLOCK SENSITIVE FILE EXTENSIONS IN ROOT
+# ====================
+<FilesMatch "\.log$|\.txt$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
 
 # ====================
 # PREVENT COMMON ATTACKS
 # ====================
+<IfModule mod_rewrite.c>
+    # Block SQL injection attempts
+    RewriteCond %{QUERY_STRING} (\=|%3D).*('|%27).*(union|select|insert|update|delete) [NC,OR]
+    RewriteCond %{QUERY_STRING} (union|select|insert|update|delete).*(\=|%3D) [NC]
+    RewriteRule ^(.*)$ - [F,L]
 
-# Block SQL injection attempts
-RewriteCond %{QUERY_STRING} (\=|%3D).*('|%27).*(union|select|insert|update|delete) [NC,OR]
-RewriteCond %{QUERY_STRING} (union|select|insert|update|delete).*(\=|%3D) [NC]
-RewriteRule ^(.*)$ - [F,L]
-
-# Block common exploit patterns
-RewriteCond %{REQUEST_URI} (\.\.\/|\.\.\\) [NC,OR]
-RewriteCond %{REQUEST_URI} (etc|passwd|boot\.ini) [NC,OR]
-RewriteCond %{REQUEST_URI} (cmd|exe|com|bat|pif) [NC]
-RewriteRule ^(.*)$ - [F,L]
+    # Block directory traversal
+    RewriteCond %{REQUEST_URI} (\.\.\/|\.\.\\) [NC]
+    RewriteRule ^(.*)$ - [F,L]
+</IfModule>
 
 # ====================
-# COMPRESSION & PERFORMANCE
+# COMPRESSION
 # ====================
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
@@ -94,16 +69,6 @@ RewriteRule ^(.*)$ - [F,L]
     ExpiresByType image/jpeg "access plus 1 month"
     ExpiresByType image/png "access plus 1 month"
     ExpiresByType image/gif "access plus 1 month"
-    ExpiresByType application/json "access plus 0 seconds"
 </IfModule>
 
-# ====================
-# PREVENT HOTLINKING
-# ====================
-<IfModule mod_rewrite.c>
-    RewriteCond %{HTTP_REFERER} !^$
-    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?oikosorchardandfarm\.com [NC]
-    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?localhost [NC]
-    RewriteRule \.(gif|jpg|jpeg|png|mp4)$ - [F,L]
-</IfModule>
 
