@@ -57,10 +57,10 @@ exports.handler = async (event) => {
 
         // Setup email transporter (using Gmail)
         const gmailUser = process.env.GMAIL_USER;
-        const gmailPassword = process.env.GMAIL_PASSWORD || process.env.GMAIL_APP_PASSWORD;
+        const gmailPassword = (process.env.GMAIL_PASSWORD || '').replace(/\s/g, ''); // Remove spaces from password
 
         console.log('Email setup - gmailUser:', gmailUser ? 'SET' : 'NOT SET');
-        console.log('Email setup - gmailPassword:', gmailPassword ? 'SET' : 'NOT SET');
+        console.log('Email setup - gmailPassword length:', gmailPassword ? gmailPassword.length : 0);
         console.log('Email setup - process.env keys:', Object.keys(process.env).filter(k => k.includes('GMAIL') || k.includes('ADMIN')));
 
         if (!gmailUser || !gmailPassword) {
@@ -83,6 +83,9 @@ exports.handler = async (event) => {
             auth: {
                 user: gmailUser,
                 pass: gmailPassword
+            },
+            tls: {
+                rejectUnauthorized: false
             }
         });
 
