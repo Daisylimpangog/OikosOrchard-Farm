@@ -25,3 +25,12 @@
 2026-02-05 02:57:58 | Name: Daisy Limpangog | Email: info@chpcebu.com | Phone: 09948962820 | Message: dwadawdaw
 2026-02-05 03:00:42 | Name: Center for Healthcare Professions Cebu, Inc. | Email: info@chpcebu.com | Phone: 09948962820 | Message: wdadawdaw
 2026-02-05 10:02:20 | Name: Test User | Email: test@example.com | Phone: 09948962820 | Message: Testing Philippine timezone
+2026-02-05 10:05:06 | Name: Logo Test | Email: test@example.com | Phone: 09948962820 | Message: Testing with Oikos logo
+2026-02-05 10:07:14 | Name: Daisy | Email: daisylimpangog@gmail.com | Phone: 09948962820 | Message: dawdawdwa
+2026-02-05 10:08:33 | Name: Daisy Test | Email: daisylimpangog@gmail.com | Phone: 09948962820 | Message: Testing with embedded logo
+2026-02-05 10:09:26 | Name: Center for Healthcare Professions Cebu, Inc. | Email: info@chpcebu.com | Phone: 09948962820 | Message: dawdawdawdaw
+2026-02-05 10:11:34 | Name: Test Logo | Email: test@example.com | Phone: 09948962820 | Message: Testing logo display
+2026-02-05 10:16:52 | Name: Test External Logo | Email: test@example.com | Phone: 09948962820 | Message: Testing with external logo URL
+2026-02-05 10:18:35 | Name: Daisy Limpangog | Email: info@chpcebu.com | Phone: 092005654842 | Message: fefesfse
+2026-02-05 10:21:29 | Name: Daisy Limpangog | Email: info@chpcebu.com | Phone: 09948962820 | Message: dwadawda
+2026-02-05 10:23:04 | Name: Daisy Limpangog | Email: daisylimpangog@gmail.com | Phone: 09948962820 | Message: I would like to inquire about your services

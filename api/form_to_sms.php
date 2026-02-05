@@ -87,16 +87,16 @@ try {
         // Calculate submission time
         $submittedTime = date('M d, Y | g:i A');
         
-        // Create HTML email design
-        $mail->Body = <<<HTML
-<!DOCTYPE html>
+        // Build HTML email with logo from external URL
+        $mail->Body = '<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f5f5f5; margin: 0; padding: 0; }
+        body { font-family: "Arial", sans-serif; background-color: #f5f5f5; margin: 0; padding: 0; }
         .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
         .header { background: linear-gradient(135deg, #2d5016 0%, #4a7c2e 100%); color: white; padding: 30px; text-align: center; }
+        .header img { max-width: 100px; height: auto; margin-bottom: 15px; }
         .header h1 { margin: 0; font-size: 24px; }
         .header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
         .content { padding: 30px; }
@@ -113,7 +113,8 @@ try {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🌾 Oikos Orchard & Farm</h1>
+            <img src="https://i.ibb.co/3YLNvXCh/Oikos-Logo-removebg-preview.png" alt="Oikos Logo removebg preview" />
+            <h1>Oikos Orchard & Farm</h1>
             <p>New Contact Form Submission</p>
         </div>
         
@@ -123,31 +124,31 @@ try {
             <div class="info-box">
                 <div class="info-row">
                     <div class="info-label">Name</div>
-                    <div class="info-value">$name</div>
+                    <div class="info-value">' . htmlspecialchars($name) . '</div>
                 </div>
             </div>
             
             <div class="info-box">
                 <div class="info-row">
                     <div class="info-label">Email</div>
-                    <div class="info-value"><a href="mailto:$email" style="color: #4a7c2e; text-decoration: none;">$email</a></div>
+                    <div class="info-value"><a href="mailto:' . htmlspecialchars($email) . '" style="color: #4a7c2e; text-decoration: none;">' . htmlspecialchars($email) . '</a></div>
                 </div>
             </div>
             
             <div class="info-box">
                 <div class="info-row">
                     <div class="info-label">Phone</div>
-                    <div class="info-value">$phone</div>
+                    <div class="info-value">' . htmlspecialchars($phone) . '</div>
                 </div>
             </div>
             
             <h2>Message</h2>
             <div class="message-box">
-                <div class="info-value">$body</div>
+                <div class="info-value">' . htmlspecialchars($body) . '</div>
             </div>
             
             <div class="timestamp">
-                Submitted: <strong>$submittedTime</strong>
+                Submitted: <strong>' . $submittedTime . '</strong>
             </div>
         </div>
         
@@ -157,8 +158,7 @@ try {
         </div>
     </div>
 </body>
-</html>
-HTML;
+</html>';
         
         $mail->isHTML = true;
         
@@ -167,6 +167,78 @@ HTML;
             error_log("Admin email sent successfully");
         } catch (Exception $e) {
             error_log("Admin email failed: " . $e->getMessage());
+        }
+        
+        // Also send a copy to the person who filled the form
+        $mail->clearAddresses();
+        $mail->addAddress($email, $name);
+        $mail->Subject = "We received your message - Oikos Orchard & Farm";
+        
+        // Create confirmation email for user
+        $confirmationBody = '<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: "Arial", sans-serif; background-color: #f5f5f5; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #2d5016 0%, #4a7c2e 100%); color: white; padding: 30px; text-align: center; }
+        .header img { max-width: 100px; height: auto; margin-bottom: 15px; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
+        .content { padding: 30px; }
+        .content h2 { color: #2d5016; font-size: 18px; margin-top: 0; }
+        .info-box { background-color: #f9f9f9; border-left: 4px solid #4a7c2e; padding: 15px; margin: 15px 0; }
+        .info-value { color: #333; font-size: 14px; margin-top: 4px; word-break: break-word; }
+        .message-box { background-color: #e8f5e9; border-left: 4px solid #4a7c2e; padding: 15px; margin: 20px 0; }
+        .footer { background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://i.ibb.co/3YLNvXCh/Oikos-Logo-removebg-preview.png" alt="Oikos Logo" />
+            <h1>Thank You!</h1>
+            <p>We Received Your Message</p>
+        </div>
+        
+        <div class="content">
+            <h2>Hello ' . htmlspecialchars($name) . ',</h2>
+            
+            <p>Thank you for reaching out to Oikos Orchard & Farm! We have received your message and will get back to you as soon as possible.</p>
+            
+            <div class="message-box">
+                <p><strong>Your Message Summary:</strong></p>
+                <p>' . htmlspecialchars($body) . '</p>
+            </div>
+            
+            <div class="info-box">
+                <p><strong>Contact Information on File:</strong><br>
+                Email: ' . htmlspecialchars($email) . '<br>
+                Phone: ' . htmlspecialchars($phone) . '</p>
+            </div>
+            
+            <p>If you have any urgent matters, please feel free to call us directly.</p>
+            
+            <p>Best regards,<br>
+            <strong>Oikos Orchard & Farm Team</strong></p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2026 Oikos Orchard & Farm. All rights reserved.</p>
+            <p>This is an automated confirmation message.</p>
+        </div>
+    </div>
+</body>
+</html>';
+        
+        $mail->Body = $confirmationBody;
+        
+        try {
+            $mail->send();
+            error_log("Confirmation email sent to: " . $email);
+        } catch (Exception $e) {
+            error_log("Confirmation email failed: " . $e->getMessage());
         }
 
     } catch (Exception $e) {
