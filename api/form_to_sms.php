@@ -85,9 +85,8 @@ try {
 
         $smsSent = false;
         
-        // Try sending SMS via email-to-SMS gateways
+        // Try sending SMS via email-to-SMS gateways (using working carriers)
         $smsGateways = array(
-            $phoneIntl . "@text.ditophone.com",      // DITO
             $phoneIntl . "@mail.globelabs.com.ph",   // Globe
             $phoneIntl . "@smspush.smart.com.ph"     // Smart
         );
