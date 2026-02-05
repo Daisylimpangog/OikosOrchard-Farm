@@ -504,10 +504,12 @@ function submitGetStarted(e) {
     };
 
     // Show loading state
-    const submitButton = form.querySelector('button[type="submit"]');
-    const originalText = submitButton.textContent;
-    submitButton.disabled = true;
-    submitButton.textContent = 'Submitting...';
+    const submitButton = form.querySelector('button[type="button"]') || form.querySelector('button');
+    const originalText = submitButton ? submitButton.textContent : 'Get Started';
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+    }
 
     // Send to Formspree
     const formspreeEndpoint = 'https://formspree.io/f/mbdardep';
@@ -550,8 +552,10 @@ function submitGetStarted(e) {
         showAlert('Error submitting request: ' + error.message, 'danger');
     })
     .finally(() => {
-        submitButton.disabled = false;
-        submitButton.textContent = originalText;
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+        }
     });
 }
 
