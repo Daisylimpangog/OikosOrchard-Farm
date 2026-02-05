@@ -55,19 +55,106 @@ exports.handler = async (event) => {
             };
         }
 
-        // Setup email transporter (using Gmail)
+        console.log('=== GET STARTED REQUEST RECEIVED ===');
+        console.log('Name:', name);
+        console.log('Email:', email);
+        console.log('Phone:', phone);
+        console.log('Interested:', interested);
+        console.log('Timestamp:', new Date().toISOString());
+        console.log('=====================================');
+
+        // Get email credentials from environment
         const gmailUser = process.env.GMAIL_USER;
-        const gmailPassword = (process.env.GMAIL_PASSWORD || '').replace(/\s/g, ''); // Remove spaces from password
+        const gmailPassword = (process.env.GMAIL_PASSWORD || '').replace(/\s/g, '');
 
-        console.log('Email setup - gmailUser:', gmailUser ? 'SET' : 'NOT SET');
-        console.log('Email setup - gmailPassword length:', gmailPassword ? gmailPassword.length : 0);
-        console.log('Email setup - process.env keys:', Object.keys(process.env).filter(k => k.includes('GMAIL') || k.includes('ADMIN')));
+        console.log('Gmail setup check:');
+        console.log('  GMAIL_USER set:', !!gmailUser);
+        console.log('  GMAIL_PASSWORD length:', gmailPassword.length);
 
-        if (!gmailUser || !gmailPassword) {
-            console.error('Gmail credentials not configured. Check environment variables.');
-            console.error('Missing: ', { gmailUser: !gmailUser, gmailPassword: !gmailPassword });
-            // For now, just log the request and return success
-            console.log('Get Started Request:', { name, email, phone, interested });
+        // Try to send email if credentials exist
+        if (gmailUser && gmailPassword) {
+            try {
+                const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: gmailUser,
+                        pass: gmailPassword
+                    },
+                    tls: {
+                        rejectUnauthorized: false
+                    }
+                });
+
+                // Email to admin
+                const adminMailOptions = {
+                    from: gmailUser,
+                    to: gmailUser,
+                    subject: 'New Get Started Request - Oikos Orchard & Farm',
+                    html: `
+                        <h2>New Get Started Request</h2>
+                        <p><strong>Name:</strong> ${name}</p>
+                        <p><strong>Email:</strong> ${email}</p>
+                        <p><strong>Phone:</strong> ${phone}</p>
+                        <p><strong>Interested In:</strong> ${interested}</p>
+                        <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+                    `
+                };
+
+                // Email to user
+                const userMailOptions = {
+                    from: gmailUser,
+                    to: email,
+                    subject: 'Thank You for Getting Started - Oikos Orchard & Farm',
+                    html: `
+                        <h2>🌱 Welcome to Oikos Orchard & Farm!</h2>
+                        <p>Dear ${name},</p>
+                        <p>Thank you for your interest in <strong>Oikos Orchard & Farm</strong>! We have received your request and will contact you shortly.</p>
+                        <p><strong>Your Request Details:</strong></p>
+                        <ul>
+                            <li>Interested In: ${interested}</li>
+                            <li>Submitted: ${new Date().toLocaleString()}</li>
+                        </ul>
+                        <p>Our team will reach out to you within <strong>24 hours</strong> to discuss your needs.</p>
+                        <p>Best regards,<br><strong>🌿 Oikos Orchard & Farm Team</strong></p>
+                    `
+                };
+
+                console.log('Attempting to send emails...');
+                
+                await Promise.all([
+                    transporter.sendMail(adminMailOptions),
+                    transporter.sendMail(userMailOptions)
+                ]);
+
+                console.log('✅ Emails sent successfully');
+                
+                return {
+                    statusCode: 200,
+                    headers,
+                    body: JSON.stringify({
+                        success: true,
+                        message: 'Thank you! We have received your request and will contact you shortly. Check your email for confirmation.'
+                    })
+                };
+            } catch (emailError) {
+                console.error('❌ Email sending failed:', {
+                    message: emailError.message,
+                    code: emailError.code
+                });
+                console.error('Stack:', emailError.stack);
+                
+                // Still return success - data was received even if email failed
+                return {
+                    statusCode: 200,
+                    headers,
+                    body: JSON.stringify({
+                        success: true,
+                        message: 'Thank you! We have received your request and will contact you shortly.'
+                    })
+                };
+            }
+        } else {
+            console.warn('⚠️  Gmail credentials not configured - returning success without sending email');
             return {
                 statusCode: 200,
                 headers,
@@ -78,19 +165,18 @@ exports.handler = async (event) => {
             };
         }
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: gmailUser,
-                pass: gmailPassword
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        });
-
-        const adminEmail = gmailUser;
-        const currentDate = new Date().toLocaleString();
+    } catch (error) {
+        console.error('Error:', error);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+                success: false,
+                message: 'Server error. Please try again later.'
+            })
+        };
+    }
+};
 
         // Email to admin
         const adminMailOptions = {
