@@ -69,13 +69,17 @@ exports.handler = async (event) => {
         const adminEmail = process.env.ADMIN_EMAIL;
 
         console.log('📧 Gmail configuration:');
-        console.log('  Sending FROM:', gmailUser);
-        console.log('  Sending TO (Admin):', adminEmail);
-        console.log('  Password length:', gmailPassword.length);
+        console.log('  GMAIL_USER exists:', !!gmailUser);
+        console.log('  GMAIL_USER value:', gmailUser ? gmailUser.substring(0, 5) + '***' : 'MISSING');
+        console.log('  GMAIL_PASSWORD exists:', !!gmailPassword);
+        console.log('  GMAIL_PASSWORD length:', gmailPassword.length);
+        console.log('  ADMIN_EMAIL exists:', !!adminEmail);
+        console.log('  ADMIN_EMAIL value:', adminEmail ? adminEmail.substring(0, 5) + '***' : 'MISSING');
 
         // Try to send email if credentials exist
-        if (gmailUser && gmailPassword) {
+        if (gmailUser && gmailPassword && adminEmail) {
             try {
+                console.log('🔐 Creating Gmail transporter...');
                 const transporter = nodemailer.createTransport({
                     host: 'smtp.gmail.com',
                     port: 587,
@@ -83,13 +87,23 @@ exports.handler = async (event) => {
                     auth: {
                         user: gmailUser,
                         pass: gmailPassword
-                    }
+                    },
+                    tls: {
+                        rejectUnauthorized: true
+                    },
+                    connectionTimeout: 5000,
+                    socketTimeout: 5000
                 });
 
                 // Verify connection
-                console.log('🔐 Verifying Gmail connection...');
-                await transporter.verify();
-                console.log('✅ Gmail connection verified');
+                console.log('🔐 Testing Gmail SMTP connection...');
+                try {
+                    await transporter.verify();
+                    console.log('✅ Gmail SMTP connection verified successfully');
+                } catch (verifyError) {
+                    console.warn('⚠️ Could not verify SMTP connection, but continuing with send attempt');
+                    console.warn('Verify error:', verifyError.message);
+                }
 
                 // Email to admin
                 const adminMailOptions = {
@@ -139,13 +153,17 @@ exports.handler = async (event) => {
                     `
                 };
 
-                console.log('📧 Sending admin notification to:', adminEmail);
+                console.log('📧 Preparing admin email to:', adminEmail);
                 const adminResult = await transporter.sendMail(adminMailOptions);
-                console.log('✅ Admin email sent:', adminResult.messageId);
+                console.log('✅ Admin email sent successfully');
+                console.log('   Message ID:', adminResult.messageId);
+                console.log('   Response:', adminResult.response);
 
-                console.log('📧 Sending user confirmation to:', email);
+                console.log('📧 Preparing user confirmation email to:', email);
                 const userResult = await transporter.sendMail(userMailOptions);
-                console.log('✅ User email sent:', userResult.messageId);
+                console.log('✅ User email sent successfully');
+                console.log('   Message ID:', userResult.messageId);
+                console.log('   Response:', userResult.response);
                 
                 return {
                     statusCode: 200,
@@ -156,33 +174,40 @@ exports.handler = async (event) => {
                     })
                 };
             } catch (emailError) {
-                console.error('❌ Email sending failed!');
-                console.error('  Error:', emailError.message);
-                console.error('  Code:', emailError.code);
+                console.error('❌ Email sending FAILED');
+                console.error('Error message:', emailError.message);
+                console.error('Error code:', emailError.code);
+                console.error('Error command:', emailError.command);
                 if (emailError.response) {
-                    console.error('  Response:', emailError.response);
+                    console.error('SMTP Response:', emailError.response);
+                }
+                if (emailError.stack) {
+                    console.error('Stack trace:', emailError.stack);
                 }
                 
-                // Still return success - data was received even if email failed
+                // Return error details for debugging
                 return {
-                    statusCode: 200,
+                    statusCode: 500,
                     headers,
                     body: JSON.stringify({
-                        success: true,
-                        message: 'Thank you! We have received your request and will contact you shortly.'
+                        success: false,
+                        message: 'Email service error. Please try again later.',
+                        error: emailError.message,
+                        code: emailError.code
                     })
                 };
             }
         } else {
-            console.warn('⚠️ Gmail credentials incomplete');
-            console.warn('  GMAIL_USER:', gmailUser);
-            console.warn('  GMAIL_PASSWORD length:', gmailPassword.length);
+            console.error('❌ Gmail credentials incomplete or missing');
+            console.error('  gmailUser:', gmailUser ? 'SET' : 'MISSING');
+            console.error('  gmailPassword:', gmailPassword ? 'SET (length:' + gmailPassword.length + ')' : 'MISSING');
+            console.error('  adminEmail:', adminEmail ? 'SET' : 'MISSING');
             return {
                 statusCode: 400,
                 headers,
                 body: JSON.stringify({
                     success: false,
-                    message: 'Email service is not configured. Please contact the administrator.'
+                    message: 'Email service is not properly configured. Please contact the administrator.'
                 })
             };
         }
