@@ -74,7 +74,7 @@ try {
     // For now, we'll log it and return success with WhatsApp link
     
     // Email backup notification to admin
-    $adminEmail = 'oikosorchardandfarm2@gmail.com';
+    $adminEmail = getenv('ADMIN_EMAIL') ?: 'admin@example.com';
     $emailSubject = "New Get Started Inquiry - Oikos Orchard & Farm";
     $emailBody = "New inquiry received:\n\n";
     $emailBody .= "Name: $name\n";

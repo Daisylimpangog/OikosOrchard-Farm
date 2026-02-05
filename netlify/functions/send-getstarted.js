@@ -56,7 +56,7 @@ exports.handler = async (event) => {
         }
 
         // Setup email transporter (using Gmail)
-        const gmailUser = process.env.GMAIL_USER || 'oikosorchardandfarm2@gmail.com';
+        const gmailUser = process.env.GMAIL_USER;
         const gmailPassword = process.env.GMAIL_PASSWORD || process.env.GMAIL_APP_PASSWORD;
 
         if (!gmailPassword) {
@@ -81,7 +81,7 @@ exports.handler = async (event) => {
             }
         });
 
-        const adminEmail = 'oikosorchardandfarm2@gmail.com';
+        const adminEmail = gmailUser;
         const currentDate = new Date().toLocaleString();
 
         // Email to admin
@@ -174,7 +174,6 @@ exports.handler = async (event) => {
 
                             <h3>Contact Information:</h3>
                             <ul>
-                                <li>📧 <strong>Email:</strong> oikosorchardandfarm2@gmail.com</li>
                                 <li>📱 <strong>Phone:</strong> +63 917 777 0851</li>
                                 <li>📍 <strong>Address:</strong> Vegetable Highway, Upper Bae, Sibonga, Cebu, Philippines</li>
                             </ul>

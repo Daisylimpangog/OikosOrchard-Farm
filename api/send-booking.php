@@ -47,7 +47,7 @@ try {
     }
 
     // Gmail account
-    $gmailAddress = 'oikosorchardandfarm2@gmail.com';
+    $gmailAddress = ADMIN_EMAIL;
     $timestamp = date('Y-m-d H:i:s');
     
     // Create booking data array
@@ -237,7 +237,7 @@ try {
             <p><strong>Need Immediate Assistance?</strong></p>
             <p>
                 📞 <strong>Phone:</strong> +1 (555) 123-4567<br>
-                📧 <strong>Email:</strong> oikosorchardandfarm2@gmail.com<br>
+                📧 <strong>Email:</strong> oikosorchardandfarm@example.com<br>
                 🌐 <strong>Website:</strong> www.oikosorchardandfarm.com<br>
                 📍 <strong>Location:</strong> Oikos Orchard & Farm, Valley Region
             </p>
@@ -256,8 +256,8 @@ try {
     
     $customerHeaders = "MIME-Version: 1.0\r\n";
     $customerHeaders .= "Content-type: text/html; charset=UTF-8\r\n";
-    $customerHeaders .= "From: Oikos Orchard & Farm <oikosorchardandfarm2@gmail.com>\r\n";
-    $customerHeaders .= "Reply-To: oikosorchardandfarm2@gmail.com\r\n";
+    $customerHeaders .= "From: Oikos Orchard & Farm <" . ADMIN_EMAIL . ">\r\n";
+    $customerHeaders .= "Reply-To: " . ADMIN_EMAIL . "\r\n";
     
     @mail($customerEmail, $customerSubject, $customerBody, $customerHeaders);
 }
@@ -303,7 +303,7 @@ try {
     }
 
     // Gmail address
-    $gmailAddress = 'oikosorchardandfarm2@gmail.com';
+    $gmailAddress = ADMIN_EMAIL;
     
     // Prepare email content
     $timestamp = date('Y-m-d H:i:s');
@@ -448,7 +448,7 @@ try {
                 <p>If you have any urgent inquiries, please don't hesitate to contact us directly at:</p>
                 <p>
                     📞 Phone: +1 (555) 123-4567<br>
-                    📧 Email: oikosorchardandfarm2@gmail.com
+                    📧 Email: oikosorchardandfarm@example.com
                 </p>
                 
                 <p>Best regards,<br>
@@ -631,7 +631,7 @@ try {
                     <p>If you have any urgent inquiries, please don't hesitate to contact us directly at:</p>
                     <p>
                         📞 Phone: +1 (555) 123-4567<br>
-                        📧 Email: oikosorchardandfarm2@gmail.com
+                        📧 Email: oikosorchardandfarm@example.com
                     </p>
                     
                     <p>Best regards,<br>

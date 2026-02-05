@@ -5,6 +5,13 @@
  */
 
 // ====================
+// APPLICATION CONSTANTS
+// ====================
+if (!defined('ADMIN_EMAIL')) {
+    define('ADMIN_EMAIL', getenv('ADMIN_EMAIL') ?: 'oikosorchardandfarm@example.com');
+}
+
+// ====================
 // DISABLE ERROR DISPLAY (Production)
 // ====================
 if ($_SERVER['HTTP_HOST'] !== 'localhost' && strpos($_SERVER['HTTP_HOST'], '127.0.0.1') === false) {
