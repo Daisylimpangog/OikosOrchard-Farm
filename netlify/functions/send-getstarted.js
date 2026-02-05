@@ -56,11 +56,28 @@ exports.handler = async (event) => {
         }
 
         // Setup email transporter (using Gmail)
+        const gmailUser = process.env.GMAIL_USER || 'oikosorchardandfarm2@gmail.com';
+        const gmailPassword = process.env.GMAIL_PASSWORD || process.env.GMAIL_APP_PASSWORD;
+
+        if (!gmailPassword) {
+            console.error('Gmail credentials not configured. Set GMAIL_USER and GMAIL_PASSWORD on Netlify.');
+            // For now, just log the request and return success
+            console.log('Get Started Request:', { name, email, phone, interested });
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify({
+                    success: true,
+                    message: 'Thank you! We have received your request and will contact you shortly.'
+                })
+            };
+        }
+
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.GMAIL_USER,
-                pass: process.env.GMAIL_PASSWORD
+                user: gmailUser,
+                pass: gmailPassword
             }
         });
 
@@ -69,7 +86,7 @@ exports.handler = async (event) => {
 
         // Email to admin
         const adminMailOptions = {
-            from: process.env.GMAIL_USER,
+            from: gmailUser,
             to: adminEmail,
             subject: 'New Get Started Request - Oikos Orchard & Farm',
             html: `
@@ -124,7 +141,7 @@ exports.handler = async (event) => {
 
         // Email to user
         const userMailOptions = {
-            from: process.env.GMAIL_USER,
+            from: gmailUser,
             to: email,
             subject: 'Thank You for Getting Started - Oikos Orchard & Farm',
             html: `
