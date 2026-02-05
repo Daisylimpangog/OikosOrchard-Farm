@@ -103,7 +103,7 @@ try {
                 if ($mail->send()) {
                     $smsSent = true;
                     error_log("SMS sent successfully to: $gateway");
-                    break; // Stop after first successful send
+                    // Continue to try other gateways for better delivery
                 }
             } catch (Exception $e) {
                 error_log("SMS failed to $gateway: " . $e->getMessage());
