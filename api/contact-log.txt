@@ -22,3 +22,6 @@
 2026-02-05 02:52:40 | Name: Daisy Test | Email: test@example.com | Phone: 09948962820 | Message: Test message - Gmail only
 2026-02-05 02:53:55 | Name: Daisy Limpangog | Email: info@chpcebu.com | Phone: 0915152 | Message: dawdawd
 2026-02-05 02:55:28 | Name: Daisy Limpangog | Email: info@chpcebu.com | Phone: 0915152 | Message: This is a test message with the new email design
+2026-02-05 02:57:58 | Name: Daisy Limpangog | Email: info@chpcebu.com | Phone: 09948962820 | Message: dwadawdaw
+2026-02-05 03:00:42 | Name: Center for Healthcare Professions Cebu, Inc. | Email: info@chpcebu.com | Phone: 09948962820 | Message: wdadawdaw
+2026-02-05 10:02:20 | Name: Test User | Email: test@example.com | Phone: 09948962820 | Message: Testing Philippine timezone

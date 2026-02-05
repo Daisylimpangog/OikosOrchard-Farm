@@ -4,6 +4,9 @@
  * Sends SMS notifications via Email Gateway + SMTP
  */
 
+// Set timezone to Philippines (UTC+8)
+date_default_timezone_set('Asia/Manila');
+
 // Prevent any output before JSON
 ob_start();
 error_reporting(E_ALL);
@@ -81,6 +84,9 @@ try {
         $mail->addAddress(ADMIN_EMAIL);
         $mail->Subject = "New Contact: $name";
         
+        // Calculate submission time
+        $submittedTime = date('M d, Y | g:i A');
+        
         // Create HTML email design
         $mail->Body = <<<HTML
 <!DOCTYPE html>
@@ -141,7 +147,7 @@ try {
             </div>
             
             <div class="timestamp">
-                Submitted: <strong>" . date('M d, Y | g:i A') . "</strong>
+                Submitted: <strong>$submittedTime</strong>
             </div>
         </div>
         
