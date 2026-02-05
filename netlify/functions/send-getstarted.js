@@ -64,39 +64,49 @@ exports.handler = async (event) => {
         console.log('=====================================');
 
         // Get email credentials from environment
-        const gmailUser = process.env.GMAIL_USER;
+        const gmailUser = process.env.GMAIL_USER || 'oikosorchardandfarm2@gmail.com';
         const gmailPassword = (process.env.GMAIL_PASSWORD || '').replace(/\s/g, '');
+        const adminEmail = process.env.ADMIN_EMAIL || 'oikosorchardandfarm2@gmail.com';
 
-        console.log('Gmail setup check:');
-        console.log('  GMAIL_USER set:', !!gmailUser);
-        console.log('  GMAIL_PASSWORD length:', gmailPassword.length);
+        console.log('📧 Gmail configuration:');
+        console.log('  Sending FROM:', gmailUser);
+        console.log('  Sending TO (Admin):', adminEmail);
+        console.log('  Password length:', gmailPassword.length);
 
         // Try to send email if credentials exist
         if (gmailUser && gmailPassword) {
             try {
                 const transporter = nodemailer.createTransport({
-                    service: 'gmail',
+                    host: 'smtp.gmail.com',
+                    port: 587,
+                    secure: false,
                     auth: {
                         user: gmailUser,
                         pass: gmailPassword
-                    },
-                    tls: {
-                        rejectUnauthorized: false
                     }
                 });
+
+                // Verify connection
+                console.log('🔐 Verifying Gmail connection...');
+                await transporter.verify();
+                console.log('✅ Gmail connection verified');
 
                 // Email to admin
                 const adminMailOptions = {
                     from: gmailUser,
-                    to: gmailUser,
-                    subject: 'New Get Started Request - Oikos Orchard & Farm',
+                    to: adminEmail,
+                    subject: '📋 New Get Started Request - Oikos Orchard & Farm',
                     html: `
-                        <h2>New Get Started Request</h2>
-                        <p><strong>Name:</strong> ${name}</p>
-                        <p><strong>Email:</strong> ${email}</p>
-                        <p><strong>Phone:</strong> ${phone}</p>
-                        <p><strong>Interested In:</strong> ${interested}</p>
-                        <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <h2 style="color: #27ae60;">📋 New Get Started Request</h2>
+                            <p><strong>Name:</strong> ${name}</p>
+                            <p><strong>Email:</strong> ${email}</p>
+                            <p><strong>Phone:</strong> ${phone}</p>
+                            <p><strong>Interested In:</strong> ${interested}</p>
+                            <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
+                            <hr>
+                            <p style="color: #666; font-size: 12px;">This is an automated email from Oikos Orchard & Farm website.</p>
+                        </div>
                     `
                 };
 
@@ -104,29 +114,38 @@ exports.handler = async (event) => {
                 const userMailOptions = {
                     from: gmailUser,
                     to: email,
-                    subject: 'Thank You for Getting Started - Oikos Orchard & Farm',
+                    subject: '🌱 Welcome to Oikos Orchard & Farm!',
                     html: `
-                        <h2>🌱 Welcome to Oikos Orchard & Farm!</h2>
-                        <p>Dear ${name},</p>
-                        <p>Thank you for your interest in <strong>Oikos Orchard & Farm</strong>! We have received your request and will contact you shortly.</p>
-                        <p><strong>Your Request Details:</strong></p>
-                        <ul>
-                            <li>Interested In: ${interested}</li>
-                            <li>Submitted: ${new Date().toLocaleString()}</li>
-                        </ul>
-                        <p>Our team will reach out to you within <strong>24 hours</strong> to discuss your needs.</p>
-                        <p>Best regards,<br><strong>🌿 Oikos Orchard & Farm Team</strong></p>
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <h2 style="color: #27ae60;">🌱 Welcome to Oikos Orchard & Farm!</h2>
+                            <p>Dear <strong>${name}</strong>,</p>
+                            <p>Thank you for your interest in <strong>Oikos Orchard & Farm</strong>! We have received your request and will contact you shortly.</p>
+                            <h3 style="color: #27ae60;">Your Request Details:</h3>
+                            <ul>
+                                <li><strong>Interested In:</strong> ${interested}</li>
+                                <li><strong>Submitted:</strong> ${new Date().toLocaleString()}</li>
+                            </ul>
+                            <p>Our team will reach out to you within <strong>24 hours</strong> to discuss your needs.</p>
+                            <h3 style="color: #27ae60;">📞 Contact Information:</h3>
+                            <ul>
+                                <li><strong>Phone:</strong> +63 917 777 0851</li>
+                                <li><strong>Email:</strong> oikosorchardandfarm2@gmail.com</li>
+                                <li><strong>Address:</strong> Vegetable Highway, Upper Bae, Sibonga, Cebu, Philippines</li>
+                            </ul>
+                            <p>Best regards,<br><strong>🌿 Oikos Orchard & Farm Team</strong></p>
+                            <hr>
+                            <p style="color: #666; font-size: 12px;">&copy; 2026 Oikos Orchard & Farm. All rights reserved.</p>
+                        </div>
                     `
                 };
 
-                console.log('Attempting to send emails...');
-                
-                await Promise.all([
-                    transporter.sendMail(adminMailOptions),
-                    transporter.sendMail(userMailOptions)
-                ]);
+                console.log('📧 Sending admin notification to:', adminEmail);
+                const adminResult = await transporter.sendMail(adminMailOptions);
+                console.log('✅ Admin email sent:', adminResult.messageId);
 
-                console.log('✅ Emails sent successfully');
+                console.log('📧 Sending user confirmation to:', email);
+                const userResult = await transporter.sendMail(userMailOptions);
+                console.log('✅ User email sent:', userResult.messageId);
                 
                 return {
                     statusCode: 200,
@@ -137,11 +156,12 @@ exports.handler = async (event) => {
                     })
                 };
             } catch (emailError) {
-                console.error('❌ Email sending failed:', {
-                    message: emailError.message,
-                    code: emailError.code
-                });
-                console.error('Stack:', emailError.stack);
+                console.error('❌ Email sending failed!');
+                console.error('  Error:', emailError.message);
+                console.error('  Code:', emailError.code);
+                if (emailError.response) {
+                    console.error('  Response:', emailError.response);
+                }
                 
                 // Still return success - data was received even if email failed
                 return {
@@ -154,13 +174,15 @@ exports.handler = async (event) => {
                 };
             }
         } else {
-            console.warn('⚠️  Gmail credentials not configured - returning success without sending email');
+            console.warn('⚠️ Gmail credentials incomplete');
+            console.warn('  GMAIL_USER:', gmailUser);
+            console.warn('  GMAIL_PASSWORD length:', gmailPassword.length);
             return {
-                statusCode: 200,
+                statusCode: 400,
                 headers,
                 body: JSON.stringify({
-                    success: true,
-                    message: 'Thank you! We have received your request and will contact you shortly.'
+                    success: false,
+                    message: 'Email service is not configured. Please contact the administrator.'
                 })
             };
         }
