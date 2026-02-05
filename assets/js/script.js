@@ -595,6 +595,9 @@ function submitContactSms() {
       ? '/OikosOrchardandFarm/api/form_to_sms.php'
       : '/.netlify/functions/send-contact-sms';
 
+    console.log('Sending SMS to:', endpoint);
+    console.log('Payload:', payload);
+
     fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -603,15 +606,18 @@ function submitContactSms() {
         body: JSON.stringify(payload)
     })
     .then(response => {
+        console.log('Response status:', response.status);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.text();
     })
     .then(text => {
+        console.log('Response text:', text);
         // Try to parse as JSON
         try {
             const responseData = JSON.parse(text);
+            console.log('Parsed response:', responseData);
             if (responseData.success) {
                 showAlert(responseData.message || 'Message sent successfully!', 'success');
                 form.reset();

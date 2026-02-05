@@ -1,10 +1,28 @@
 const nodemailer = require('nodemailer');
 
 exports.handler = async (event) => {
+    // Add CORS headers
+    const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+    };
+
+    // Handle OPTIONS requests
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 200,
+            headers,
+            body: 'ok'
+        };
+    }
+
     // Only allow POST requests
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
+            headers,
             body: JSON.stringify({ success: false, message: 'Method not allowed' })
         };
     }
@@ -16,6 +34,7 @@ exports.handler = async (event) => {
         if (!data.name || !data.email || !data.phone || !data.interested) {
             return {
                 statusCode: 400,
+                headers,
                 body: JSON.stringify({ success: false, message: 'Please fill all required fields' })
             };
         }
@@ -25,6 +44,7 @@ exports.handler = async (event) => {
         if (!emailRegex.test(data.email)) {
             return {
                 statusCode: 400,
+                headers,
                 body: JSON.stringify({ success: false, message: 'Invalid email address' })
             };
         }
@@ -162,6 +182,7 @@ exports.handler = async (event) => {
 
         return {
             statusCode: 200,
+            headers,
             body: JSON.stringify({
                 success: true,
                 message: 'Thank you! We have received your request and will contact you shortly. Check your email for confirmation.'
@@ -172,6 +193,7 @@ exports.handler = async (event) => {
         console.error('Error:', error);
         return {
             statusCode: 500,
+            headers,
             body: JSON.stringify({
                 success: false,
                 message: 'Server error. Please try again later.'

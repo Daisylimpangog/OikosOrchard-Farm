@@ -2,11 +2,28 @@
 const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyfgMWh3i6EvBrf6yyNkrHsX7LFUYXTvzZ3C95oEI7DVcDOmWLXOUdj1j4PMbag_-fI7w/exec';
 
 exports.handler = async (event, context) => {
+  // Add CORS headers
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  };
+
+  // Handle OPTIONS requests
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: 'ok'
+    };
+  }
+
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ success: false, message: 'Method not allowed' })
     };
   }
@@ -20,7 +37,7 @@ exports.handler = async (event, context) => {
     if (!data.fullName || !data.email || !data.phone || !data.checkinDate || !data.guests || !data.packageName) {
       return {
         statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ success: false, message: 'Please fill all required fields' })
       };
     }
@@ -30,7 +47,7 @@ exports.handler = async (event, context) => {
     if (!emailRegex.test(data.email)) {
       return {
         statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ success: false, message: 'Invalid email address' })
       };
     }
@@ -72,7 +89,7 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         success: true,
         message: 'Booking submitted successfully! A confirmation email has been sent to ' + data.email + '. Our team will contact you within 24 hours at ' + data.phone + '.',
@@ -84,7 +101,7 @@ exports.handler = async (event, context) => {
     console.error('Error processing booking:', error);
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ 
         success: false, 
         message: 'Server error: ' + error.message,
