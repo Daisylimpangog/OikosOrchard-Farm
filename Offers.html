@@ -818,7 +818,7 @@
         <div class="container">
             <div class="row mb-4">
                 <div class="col-md-3 mb-4">
-                    <h5 class="mb-3"><img src="../assets/images/OikosOF.png" alt="Oikos Logo" class="footer-logo me-2">Oikos Orchard & Farm</h5>
+                    <h5 class="mb-3"><img src="./assets/images/OikosOF.png" alt="Oikos Logo" class="footer-logo me-2">Oikos Orchard & Farm</h5>
                     <p>Your trusted partner in sustainable and organic farming solutions.</p>
                 </div>
                 <div class="col-md-3 mb-4">
@@ -920,7 +920,7 @@
 
             // Send to server (using Netlify function)
             const apiEndpoint = window.location.hostname === 'localhost' 
-                ? 'http://localhost:8888/.netlify/functions/send-booking'  // For local testing
+                ? '/OikosOrchardandFarm/api/send-booking.php'  // For local testing
                 : '/.netlify/functions/send-booking';  // For deployed Netlify site
                 
             fetch(apiEndpoint, {
@@ -1020,6 +1020,6 @@
             }, 8000);
         }
     </script>
-    <script src="../assets/js/script.js"></script>
+    <script src="./assets/js/script.js"></script>
 </body>
 </html>
