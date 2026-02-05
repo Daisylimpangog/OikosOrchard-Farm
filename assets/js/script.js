@@ -506,8 +506,15 @@ function submitGetStarted() {
         submitButton.textContent = 'Submitting...';
     }
 
-    // Send to server
-    fetch(`/OikosOrchardandFarm/api/send-getstarted.php`, {
+    // Send to server (use Netlify function or local PHP)
+    const endpoint = window.location.hostname === 'localhost' 
+      ? '/OikosOrchardandFarm/api/send-getstarted.php'
+      : '/.netlify/functions/send-getstarted';
+
+    console.log('Sending Get Started to:', endpoint);
+    console.log('Payload:', data);
+
+    fetch(endpoint, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -515,12 +522,17 @@ function submitGetStarted() {
         body: JSON.stringify(data)
     })
     .then(response => {
+        console.log('Response status:', response.status);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            return response.text().then(text => {
+                console.error('Error response:', text);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            });
         }
         return response.json();
     })
     .then(responseData => {
+        console.log('Response data:', responseData);
         if (responseData.success) {
             showAlert(responseData.message, 'success');
             form.reset();
