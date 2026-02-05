@@ -199,12 +199,24 @@ exports.handler = async (event) => {
         };
 
         // Send both emails
+        let emailsSent = false;
         try {
-            await transporter.sendMail(adminMailOptions);
-            await transporter.sendMail(userMailOptions);
+            console.log('Attempting to send admin email to:', adminEmail);
+            const adminResult = await transporter.sendMail(adminMailOptions);
+            console.log('Admin email sent successfully:', adminResult.messageId);
+            
+            console.log('Attempting to send user email to:', email);
+            const userResult = await transporter.sendMail(userMailOptions);
+            console.log('User email sent successfully:', userResult.messageId);
+            
+            emailsSent = true;
         } catch (emailError) {
-            console.log('Email error (non-critical):', emailError.message);
-            // Continue anyway - we got the request
+            console.error('Email sending error:', {
+                message: emailError.message,
+                code: emailError.code,
+                response: emailError.response
+            });
+            console.error('Full error:', emailError);
         }
 
         return {
