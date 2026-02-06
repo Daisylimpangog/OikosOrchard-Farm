@@ -974,6 +974,11 @@
                                     modal.hide();
                                 }
                             }
+                            // Remove backdrop overlay
+                            const backdrop = document.querySelector('.modal-backdrop');
+                            if (backdrop) {
+                                backdrop.remove();
+                            }
                         } catch (e) {
                             console.log('Modal close handled gracefully');
                         }
