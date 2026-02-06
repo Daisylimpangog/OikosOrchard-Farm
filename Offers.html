@@ -971,13 +971,17 @@
                             if (modalElement && window.bootstrap) {
                                 const modal = bootstrap.Modal.getInstance(modalElement);
                                 if (modal) {
+                                    // Listen for modal fully hidden event
+                                    modalElement.addEventListener('hidden.bs.modal', () => {
+                                        // Remove all backdrop overlays
+                                        document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+                                        // Remove modal-open class from body
+                                        document.body.classList.remove('modal-open');
+                                        // Remove any inline overflow styles
+                                        document.body.style.overflow = '';
+                                    }, { once: true });
                                     modal.hide();
                                 }
-                            }
-                            // Remove backdrop overlay
-                            const backdrop = document.querySelector('.modal-backdrop');
-                            if (backdrop) {
-                                backdrop.remove();
                             }
                         } catch (e) {
                             console.log('Modal close handled gracefully');
