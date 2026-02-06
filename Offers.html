@@ -709,33 +709,33 @@
                 <div class="modal-body">
                     <form id="productOrderForm">
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Product Name *</label>
-                            <input type="text" class="form-control" id="productName" name="productName" required>
+                            <label for="productName" class="form-label fw-bold">Product Name *</label>
+                            <input type="text" class="form-control" id="productName" name="productName" autocomplete="off" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Quantity Deliver (kg) *</label>
-                            <input type="number" class="form-control" id="quantityDeliver" name="quantityDeliver" step="0.01" min="0" placeholder="e.g., 0.25" required>
+                            <label for="quantityDeliver" class="form-label fw-bold">Quantity Deliver (kg) *</label>
+                            <input type="number" class="form-control" id="quantityDeliver" name="quantityDeliver" step="0.01" min="0" placeholder="e.g., 0.25" autocomplete="off" required>
                             <small class="form-text text-muted">Enter quantity in kg (supports decimals like 0.25, 0.5, 1.5, etc.)</small>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Full Name *</label>
-                            <input type="text" class="form-control" id="orderFullName" name="fullName" required>
+                            <label for="orderFullName" class="form-label fw-bold">Full Name *</label>
+                            <input type="text" class="form-control" id="orderFullName" name="fullName" autocomplete="name" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Email Address *</label>
-                            <input type="email" class="form-control" id="orderEmail" name="email" required>
+                            <label for="orderEmail" class="form-label fw-bold">Email Address *</label>
+                            <input type="email" class="form-control" id="orderEmail" name="email" autocomplete="email" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Phone Number *</label>
-                            <input type="tel" class="form-control" id="orderPhone" name="phone" required>
+                            <label for="orderPhone" class="form-label fw-bold">Phone Number *</label>
+                            <input type="tel" class="form-control" id="orderPhone" name="phone" autocomplete="tel" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Delivery Date *</label>
-                            <input type="date" class="form-control" id="orderDeliveryDate" name="deliveryDate" required>
+                            <label for="orderDeliveryDate" class="form-label fw-bold">Delivery Date *</label>
+                            <input type="date" class="form-control" id="orderDeliveryDate" name="deliveryDate" autocomplete="off" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Special Requests (Optional)</label>
-                            <textarea class="form-control" id="orderRequests" name="specialRequests" rows="3" placeholder="Any special requests?"></textarea>
+                            <label for="orderRequests" class="form-label">Special Requests (Optional)</label>
+                            <textarea class="form-control" id="orderRequests" name="specialRequests" rows="3" placeholder="Any special requests?" autocomplete="off"></textarea>
                         </div>
                     </form>
                 </div>
@@ -758,7 +758,7 @@
                 <div class="modal-body">
                     <form id="bookingForm">
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Select Package *</label>
+                            <label for="packageSelect" class="form-label fw-bold">Select Package *</label>
                             <select class="form-control" id="packageSelect" required onchange="updatePackageFromSelect()">
                                 <option value="">-- Choose a Package --</option>
                                 <option value="Glamping for 2|3200">Glamping for 2 - ₱3,200</option>
@@ -771,29 +771,29 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Selected Package</label>
-                            <input type="text" class="form-control" id="packageName" name="packageName" readonly style="background-color: #f0f0f0;">
+                            <label for="packageName" class="form-label fw-bold">Selected Package</label>
+                            <input type="text" class="form-control" id="packageName" name="packageName" autocomplete="off" readonly style="background-color: #f0f0f0;">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Price</label>
-                            <input type="text" class="form-control" id="packagePrice" name="packagePrice" readonly style="background-color: #f0f0f0;">
+                            <label for="packagePrice" class="form-label fw-bold">Price</label>
+                            <input type="text" class="form-control" id="packagePrice" name="packagePrice" autocomplete="off" readonly style="background-color: #f0f0f0;">
                         </div>
                         <hr>
                         <div class="mb-3">
                             <label for="bookingFullName" class="form-label">Full Name *</label>
-                            <input type="text" class="form-control" id="bookingFullName" name="fullName" required>
+                            <input type="text" class="form-control" id="bookingFullName" name="fullName" autocomplete="name" required>
                         </div>
                         <div class="mb-3">
                             <label for="bookingEmail" class="form-label">Email Address *</label>
-                            <input type="email" class="form-control" id="bookingEmail" name="email" required>
+                            <input type="email" class="form-control" id="bookingEmail" name="email" autocomplete="email" required>
                         </div>
                         <div class="mb-3">
                             <label for="bookingPhone" class="form-label">Phone Number *</label>
-                            <input type="tel" class="form-control" id="bookingPhone" name="phone" required>
+                            <input type="tel" class="form-control" id="bookingPhone" name="phone" autocomplete="tel" required>
                         </div>
                         <div class="mb-3">
                             <label for="bookingDate" class="form-label">Check-in Date *</label>
-                            <input type="date" class="form-control" id="bookingDate" name="checkinDate" required>
+                            <input type="date" class="form-control" id="bookingDate" name="checkinDate" autocomplete="off" required>
                         </div>
                         <div class="mb-3">
                             <label for="bookingGuests" class="form-label">Number of Guests *</label>
@@ -801,7 +801,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="bookingRequests" class="form-label">Special Requests (Optional)</label>
-                            <textarea class="form-control" id="bookingRequests" name="specialRequests" rows="3" placeholder="Any special requests or preferences?"></textarea>
+                            <textarea class="form-control" id="bookingRequests" name="specialRequests" rows="3" placeholder="Any special requests or preferences?" autocomplete="off"></textarea>
                         </div>
                     </form>
                 </div>
